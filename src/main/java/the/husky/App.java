@@ -6,6 +6,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import the.husky.jdbc.CheckRepository;
+import the.husky.web.servlet.CheckByIdServlet;
 import the.husky.web.servlet.RandomChecksServlet;
 
 public class App
@@ -19,21 +20,15 @@ public class App
         CheckRepository checkRepository = new CheckRepository(jdbcTemplate);
 
         RandomChecksServlet randomChecksServlet = new RandomChecksServlet(checkRepository);
+        CheckByIdServlet checkByIdServlet = new CheckByIdServlet(checkRepository);
+
         ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         contextHandler.addServlet(new ServletHolder(randomChecksServlet), "/checks/random");
+        contextHandler.addServlet(new ServletHolder(checkByIdServlet), "/checks");
 
         Server server = new Server(3000);
         server.setHandler(contextHandler);
         server.start();
-
-
-//        OLDMainServlet OLDMainServlet = new OLDMainServlet();
-//        ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-//        contextHandler.addServlet(new ServletHolder(OLDMainServlet), "/checks/random");
-//
-//        Server server = new Server(3001);
-//        server.setHandler(contextHandler);
-//        server.start();
     }
 }
 

@@ -40,11 +40,35 @@ public class CheckRepository {
             "FROM CHECKBODY " +
             "JOIN TAXES ON TAXES.NAME = CHECKBODY.LETTER " +
             "WHERE CHECKBODY.CHECKID = ?";
+    private static final String GET_CHECK_BY_ID = "SELECT " +
+            "CHECKHEAD.ID AS checkId, " +
+            "ORGNAME AS orgName, " +
+            "POINTNAME AS pointName, " +
+            "FN AS fiscalNumber, " +
+            "POINTADDR AS pointAddress, " +
+            "ORDERTAXNUM AS orderTaxNumber, " +
+            "TOTALSUM AS totalSum, " +
+            "ORDERDATE AS orderDate, " +
+            "TIN AS tin, " +
+            "CHECKTAX.TAXPRC AS taxPercent, " +
+            "TOTALSUM * (CHECKTAX.TAXPRC / 100) AS taxSum, " +
+            "TAXCODE AS taxType " +
+            "FROM CHECKHEAD " +
+            "JOIN CHECKTAX ON CHECKHEAD.ID = CHECKTAX.CHECKID " +
+            "WHERE CHECKHEAD.ID = ?";
 
     private final JdbcTemplate jdbcTemplate;
 
     public CheckRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Check getCheckById(long checkId) {
+        Check check = jdbcTemplate.queryForObject(GET_CHECK_BY_ID, CHECK_ROW_MAPPER, checkId);
+        List<Product> products = jdbcTemplate.query(GET_PRODUCTS_FOR_CHECK, PRODUCT_ROW_MAPPER, checkId);
+        assert check != null;
+        check.setProducts(products);
+        return check;
     }
 
     public List<Check> getRandomChecks() {
