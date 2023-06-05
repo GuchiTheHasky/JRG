@@ -38,6 +38,7 @@ build/
 
 ### VS Code ###
 .vscode/
+*.iml
 
 ### Mac OS ###
 .DS_Store
